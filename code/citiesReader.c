@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 
 /**
@@ -15,7 +16,7 @@
 ListOfCities* createCities(int number){
     ListOfCities* cities = malloc(sizeof(ListOfCities));
     int i;
-    
+
     cities->number = number;
     // Allocate arrays
     cities->name = malloc(cities->number*sizeof(char*));
@@ -49,7 +50,7 @@ void freeListOfCities(ListOfCities * cities){
    population and coordinates.
    @param popMin is a threshold above which a city will be counted
    @return number of cities with a population above popMin
-   @requires inputFile != NULL 
+   @requires inputFile != NULL
    @requires popMin > 0
 */
 int countCitiesWithMinPopulation(FILE* inputFile, int popMin){
@@ -57,7 +58,7 @@ int countCitiesWithMinPopulation(FILE* inputFile, int popMin){
   char line[512];
   const char s[2] = ",";
   char *token;
-  
+
   while(fgets(line, 512, inputFile) != NULL){
     /* Select the 14th coma separated value and stores it in 'token' */
     token = strtok(line, s);
@@ -67,8 +68,8 @@ int countCitiesWithMinPopulation(FILE* inputFile, int popMin){
     if(myPop >= popMin) number++;
   }
   /* Rewind file */
-  fseek(inputFile, 0, SEEK_SET); 
-  
+  fseek(inputFile, 0, SEEK_SET);
+
   return number;
 }
 
@@ -88,9 +89,9 @@ void loadListOfCities(FILE* inputFile, int popMin, ListOfCities* cities){
   const char s[2] = ",";
   char *token;
   char myName[32];
-  
+
   while(fgets(line, 512, inputFile) != NULL){
-      
+
     token = strtok(line, s);
     for(i=0; i<3;  i++) token = strtok(NULL, s);
     strncpy(myName, token, 32);
@@ -102,7 +103,7 @@ void loadListOfCities(FILE* inputFile, int popMin, ListOfCities* cities){
       cities->lon[index] = atof(token);
       for(i=0; i<1;  i++) token = strtok(NULL, s);
       cities->lat[index] = atof(token);
-    
+
       strncpy(cities->name[index], myName, 32);
       cities->pop[index] = myPop;
       index++;
@@ -122,7 +123,7 @@ void saveListOfCities(ListOfCities* cities){
     perror("Could not open file resuCities.dat");
     exit(-1);
   }
-  
+
   for(int i=0; i<cities->number; i++)
     fprintf(outputFile, "%i %f %f\n", cities->pop[i], cities->lon[i], cities->lat[i]);
   fclose(outputFile);
@@ -130,7 +131,7 @@ void saveListOfCities(ListOfCities* cities){
 
 
 /**
-   Loads the name, population and coordinates of all the cities above 
+   Loads the name, population and coordinates of all the cities above
    a given population threshold, store the result in a file named 'resuCities.dat'
    and return a ListOfCities data structure containing the list.
    @param popMin is the population threshold for a city to be considered.
@@ -150,12 +151,108 @@ ListOfCities* citiesReader(int popMin){
 
   ListOfCities* cities = createCities(countCitiesWithMinPopulation(inputFile, popMin));
   loadListOfCities(inputFile, popMin, cities);
- 
+
   fclose(inputFile);
-  
+
   /* WRITING cities with population greater than or equal to 'popMin' */
   printf("== Writing cities with population >= %i in 'resuCities.dat' ==\n", popMin);
   saveListOfCities(cities);
 
   return cities;
+}
+
+/* ***************************************************************************************************** */
+float distance(float lon1, float lat1, float lon2, float lat2){
+  float distance, val;
+  val = 3.14159265/180;
+  distance = 6371 * acos( lat1*val) * sin(lat2*val) + cos(lon1*val - lon2*val) * cos(lat1*val) * cos(lat2*val);
+  return distance;
+}
+
+arete* creer_arete(int ville_d, int ville_a, float lon1, float lat1, float lon2, float lat2){
+  arete* a = malloc(sizeof(arete*));
+  a->Ville_D = ville_d;
+  a->Ville_A = ville_a;
+  a->distance = distance(lon1, lat1, lon2, lat2);
+  a->est_visite = 0;
+}
+
+void free_arete(arete* a){
+  free(a);
+}
+
+tas* creer_tas(int capacite_max){
+  tas* t = malloc(sizeof(tas*));
+  t->nb_element = 0;
+  t->capacite_max = capacite_max;
+  t->tab = malloc(capacite_max*sizeof(arete*));
+  return t;
+}
+
+void free_tas(tas* t){
+  /*int i;
+  for (i=0; i<t->nb_element; i++)
+    free_arete(&(t->tab[i]));*/
+  free(t);
+}
+
+void entasser(tas* t, int pos){
+  while(t->tab[parent(pos)].distance < t->tab[pos].distance){
+    echanger(t, parent(pos), pos);
+    pos = parent(pos);
+  }
+}
+
+int parent(int pos){
+  return (pos-1)/2;
+}
+
+void echanger(tas* t, int pos1, int pos2){
+  arete* tmp;
+
+  tmp = &(t->tab[pos1]);
+  t->tab[pos1] = t->tab[pos2];
+  t->tab[pos2] = *tmp;
+}
+
+void inserer_tas(tas* t, arete* a){
+  if(t->nb_element == t->capacite_max){
+    printf("tableau plein\n");
+    return;
+  }
+  t->tab[t->nb_element] = *a;
+  entasser(t, t->nb_element);
+  t->nb_element++;
+}
+
+int filsDroit(int pos){
+  return 2*pos+2;
+}
+
+int filsGauche(int pos){
+  return 2*pos+1;
+}
+
+int plusGrandEnfant(tas* t, int pos){
+  if(t->tab[filsGauche(pos)].distance > t->tab[filsDroit(pos)].distance)
+    return filsGauche(pos);
+  return filsDroit(pos);
+}
+
+void supprimer_tas(tas* t){
+  int pos=0;
+  int tmp=0;
+
+  echanger(t, 0, t->nb_element-1);
+  while((t->tab[pos].distance < t->tab[plusGrandEnfant(t,pos)].distance) && (plusGrandEnfant(t,pos) < t->nb_element)){
+    tmp = plusGrandEnfant(t,pos);
+    echanger(t, pos, plusGrandEnfant(t,pos));
+    pos = tmp;
+  }
+}
+
+void affichage(tas* t){
+  int i;
+  for(i=0; i<t->capacite_max; i++)
+    printf("%d - %d = %fkm\n", t->tab[i].Ville_D, t->tab[i].Ville_A, t->tab[i].distance);
 }
