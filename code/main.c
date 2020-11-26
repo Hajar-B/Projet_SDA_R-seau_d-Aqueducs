@@ -19,27 +19,43 @@ void saveGraph(ListOfCities * cities){
 
 
 int main(int argc, char ** argv) {
-  float distance;
-  /*
+
+
   if( argc != 2 ){
     perror("Veuillez passer une population minimale en paramètre du programme");
     return EXIT_FAILURE;
-  }*/
+  }
 //-----------------------------------------------------------------
 //--- READING cities
 //-----------------------------------------------------------------
   int popMin = atoi(argv[1]);
 
   ListOfCities* cities;
+  tas* t;
+  arete* a;
+  int nb_arete;
   cities = citiesReader(popMin);
-
+  nb_arete = (cities->number*(cities->number-1))/2;
+  t = creer_tas(nb_arete);
   // ... just to check! This line can be removed.
+  /*
   for(int i=0; i<cities->number; i++){
     printf("%s %i %f %f\n", cities->name[i], cities->pop[i], cities->lon[i], cities->lat[i]);
-    //distance = 6371*acos( sin(cities->lat[i]) * sin(cities->lat[i+1]) + cos(cities->lat[i] - cities->lat[i+1])*cos(cities->lon[i])*cos(cities->lon[i+1]));
-    distance = 6371*acos( sin(cities->lat[i]) * sin(cities->lat[i+1]) + cos(cities->lat[i] - cities->lat[i+1])*cos(cities->lat[i])*cos(cities->lat[i+1]));
-    printf("distance entre %s et %s = %f\n\n", cities->name[i], cities->name[i+1],distance);
+    printf("distance = %f\n",distance(cities->lon[i], cities->lat[i], cities->lon[i+1], cities->lat[i+1]));
+  }*/
+
+  for(int i=0; i<cities->number; i++){
+    for(int j=i+1; j<cities->number; j++){
+      a = creer_arete(i,j,cities->lon[i],cities->lat[i], cities->lon[j],cities->lat[j]);
+      printf("\n==== %d %d %f\n", i,j, a->distance);
+      inserer_tas(t,a);
+    }
+    //break;
   }
+  printf("\n\n");
+  //affichage(t);
+  printf("\n");
+  free_tas(t);
 
 //-----------------------------------------------------------------
 //--- COMPUTING complete graph
