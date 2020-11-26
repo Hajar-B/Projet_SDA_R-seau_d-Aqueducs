@@ -165,7 +165,7 @@ ListOfCities* citiesReader(int popMin){
 float distance(float lon1, float lat1, float lon2, float lat2){
   float distance, val;
   val = 3.14159265/180;
-  distance = 6371 * acos( lat1*val) * sin(lat2*val) + cos(lon1*val - lon2*val) * cos(lat1*val) * cos(lat2*val);
+  distance = 6371 * acos(sin(lat1*val) * sin(lat2*val) + cos(lon1*val - lon2*val) * cos(lat1*val) * cos(lat2*val));
   return distance;
 }
 
@@ -197,10 +197,19 @@ void free_tas(tas* t){
 }
 
 void entasser(tas* t, int pos){
-  while(t->tab[parent(pos)].distance < t->tab[pos].distance){
+  //int i;
+  //printf("debut entasser\n");
+
+  //for(i=0; i<t->nb_element; i++)
+  //  printf("%d - %d = %fkm\n", t->tab[i].Ville_D, t->tab[i].Ville_A, t->tab[i].distance);
+
+  while(t->tab[parent(pos)].distance > t->tab[pos].distance){
+    //printf("%f / %f\n",t->tab[parent(pos)].distance, t->tab[pos].distance);
     echanger(t, parent(pos), pos);
     pos = parent(pos);
   }
+
+  //printf("fin entasser\n");
 }
 
 int parent(int pos){
@@ -208,14 +217,15 @@ int parent(int pos){
 }
 
 void echanger(tas* t, int pos1, int pos2){
-  arete* tmp;
+  arete tmp;
 
-  tmp = &(t->tab[pos1]);
+  tmp = (t->tab[pos1]);
   t->tab[pos1] = t->tab[pos2];
-  t->tab[pos2] = *tmp;
+  t->tab[pos2] = tmp;
 }
 
 void inserer_tas(tas* t, arete* a){
+  int i;
   if(t->nb_element == t->capacite_max){
     printf("tableau plein\n");
     return;
@@ -223,6 +233,8 @@ void inserer_tas(tas* t, arete* a){
   t->tab[t->nb_element] = *a;
   entasser(t, t->nb_element);
   t->nb_element++;
+  for(i=0; i<t->nb_element; i++)
+    printf("%d - %d -> %fkm\n", t->tab[i].Ville_D, t->tab[i].Ville_A, t->tab[i].distance);
 }
 
 int filsDroit(int pos){
@@ -254,5 +266,5 @@ void supprimer_tas(tas* t){
 void affichage(tas* t){
   int i;
   for(i=0; i<t->capacite_max; i++)
-    printf("%d - %d = %fkm\n", t->tab[i].Ville_D, t->tab[i].Ville_A, t->tab[i].distance);
+      printf("%d - %d == %fkm\n", t->tab[i].Ville_D, t->tab[i].Ville_A, t->tab[i].distance);
 }
