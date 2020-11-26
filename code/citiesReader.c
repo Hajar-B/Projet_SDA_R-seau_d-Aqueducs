@@ -225,7 +225,7 @@ void echanger(tas* t, int pos1, int pos2){
 }
 
 void inserer_tas(tas* t, arete* a){
-  int i;
+  //int i;
   if(t->nb_element == t->capacite_max){
     printf("tableau plein\n");
     return;
@@ -233,8 +233,8 @@ void inserer_tas(tas* t, arete* a){
   t->tab[t->nb_element] = *a;
   entasser(t, t->nb_element);
   t->nb_element++;
-  for(i=0; i<t->nb_element; i++)
-    printf("%d - %d -> %fkm\n", t->tab[i].Ville_D, t->tab[i].Ville_A, t->tab[i].distance);
+  //for(i=0; i<t->nb_element; i++)
+    //printf("%d - %d -> %fkm\n", t->tab[i].Ville_D, t->tab[i].Ville_A, t->tab[i].distance);
 }
 
 int filsDroit(int pos){
@@ -246,7 +246,7 @@ int filsGauche(int pos){
 }
 
 int plusGrandEnfant(tas* t, int pos){
-  if(t->tab[filsGauche(pos)].distance > t->tab[filsDroit(pos)].distance)
+  if(t->tab[filsGauche(pos)].distance < t->tab[filsDroit(pos)].distance)
     return filsGauche(pos);
   return filsDroit(pos);
 }
@@ -254,17 +254,18 @@ int plusGrandEnfant(tas* t, int pos){
 void supprimer_tas(tas* t){
   int pos=0;
   int tmp=0;
-
+  printf("\nEXTRACTION DE : %d - %d => %fkm\n", t->tab[0].Ville_D, t->tab[0].Ville_A, t->tab[0].distance);
   echanger(t, 0, t->nb_element-1);
-  while((t->tab[pos].distance < t->tab[plusGrandEnfant(t,pos)].distance) && (plusGrandEnfant(t,pos) < t->nb_element)){
+  while((t->tab[pos].distance > t->tab[plusGrandEnfant(t,pos)].distance) && (plusGrandEnfant(t,pos) < t->nb_element)){
     tmp = plusGrandEnfant(t,pos);
     echanger(t, pos, plusGrandEnfant(t,pos));
     pos = tmp;
   }
+  t->nb_element--;
 }
 
 void affichage(tas* t){
   int i;
-  for(i=0; i<t->capacite_max; i++)
+  for(i=0; i<t->nb_element; i++)
       printf("%d - %d == %fkm\n", t->tab[i].Ville_D, t->tab[i].Ville_A, t->tab[i].distance);
 }
