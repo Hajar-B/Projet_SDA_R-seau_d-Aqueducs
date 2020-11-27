@@ -309,24 +309,16 @@ void kruskal_algo(ListOfCities * cities){
     }
   }
   tmp = supprimer_tas(t);
-  //printf("%d - %d\n", tmp.Ville_D, tmp.Ville_A);
   memset(parent, -1, sizeof(int)*cities->number);
   while(t->nb_element != 0){
     ext = union_find(tmp, parent);
-
     if(ext == 0){
       printf("\narete %d - %d forme un cyle\n", tmp.Ville_D, tmp.Ville_A);
     }
     else{
       printf("\narete %d - %d est un succes\n", tmp.Ville_D, tmp.Ville_A);
     }
-    for(int k=0; k<cities->number; k++)
-      printf(" %d ", parent[k]);
     tmp = supprimer_tas(t);
-    printf("\n***********arete %d - %d forme un cyle\n", tmp.Ville_D, tmp.Ville_A);
-    //for(int k=0; k<cities->number; k++)
-    printf("hajar\n");
-    printf(" %d ", parent[1]);
   }
 
   free_tas(t);
