@@ -18,7 +18,7 @@ struct arete{
   int Ville_D;    //ville de depart
   int Ville_A;    //ville d'arrivé
   float distance;   //distance entre les deux villes
-  int est_visite; //0 si on pas visité l'arête sinon 1
+  int est_visite; //0 si on pas visité l'arête sinon 1 METTRE UN BOOLEAN
 };
 
 typedef struct tas tas;
@@ -47,9 +47,13 @@ void inserer_tas(tas* t, arete* a);
 int filsDroit(int pos);
 int filsGauche(int pos);
 int plusGrandEnfant(tas* t, int pos);
-void supprimer_tas(tas* t);
+arete supprimer_tas(tas* t);
+
+int find(int* parent, int sommet);
+int union_find(arete a, int* parent);
+
+void kruskal_algo(ListOfCities * cities);
 
 void affichage(tas* t);
 
 #endif
- 
