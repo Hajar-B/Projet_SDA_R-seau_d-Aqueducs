@@ -256,11 +256,18 @@ arete supprimer_tas(tas* t){
   int tmp=0;
   arete a = t->tab[0];
   printf("\nEXTRACTION DE : %d - %d => %fkm\n", t->tab[0].Ville_D, t->tab[0].Ville_A, t->tab[0].distance);
+  //printf("taille = %d\n", t->nb_element-1);
+
   echanger(t, 0, t->nb_element-1);
-  while((t->tab[pos].distance > t->tab[plusGrandEnfant(t,pos)].distance) && (plusGrandEnfant(t,pos) < t->nb_element)){
+
+  while((t->tab[pos].distance > t->tab[plusGrandEnfant(t,pos)].distance) && (plusGrandEnfant(t,pos) < t->nb_element-1)){
     tmp = plusGrandEnfant(t,pos);
+    //printf("%d %d\n", pos, plusGrandEnfant(t,pos));
     echanger(t, pos, plusGrandEnfant(t,pos));
+
     pos = tmp;
+    //affichage(t);
+    //printf("\n*********-----------------------------*********\n");
   }
   t->nb_element--;
   return a;
@@ -298,9 +305,10 @@ int union_find(arete a, int* parent){
 void kruskal_algo(ListOfCities * cities){
   int nb_arete = (cities->number*(cities->number-1))/2;
   tas* t = creer_tas(nb_arete);
-  int* parent = (int*)malloc(cities->number*sizeof(int));
   arete tmp, *a;
   int ext;
+
+
 
   for(int i=0; i<cities->number; i++){
     for(int j=i+1; j<cities->number; j++){
@@ -308,17 +316,28 @@ void kruskal_algo(ListOfCities * cities){
       inserer_tas(t,a);
     }
   }
-  tmp = supprimer_tas(t);
+  int* parent = (int*)malloc(cities->number*sizeof(int));
   memset(parent, -1, sizeof(int)*cities->number);
+  tmp = supprimer_tas(t);
+  //printf("%d - %d\n", tmp.Ville_D, tmp.Ville_A);
   while(t->nb_element != 0){
     ext = union_find(tmp, parent);
+    if(ext == 1)
+      printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
+    /*
     if(ext == 0){
-      printf("\narete %d - %d forme un cyle\n", tmp.Ville_D, tmp.Ville_A);
+      printf("\narete %d - %d forme un cycle\n", tmp.Ville_D, tmp.Ville_A);
     }
     else{
-      printf("\narete %d - %d est un succes\n", tmp.Ville_D, tmp.Ville_A);
-    }
+      printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
+    }*/
+    //for(int k=0; k<cities->number; k++)
+      //printf(" %d ", parent[k]);
     tmp = supprimer_tas(t);
+    //printf("\n***********arete %d - %d forme un cyle\n", tmp.Ville_D, tmp.Ville_A);
+    //for(int k=0; k<cities->number; k++)
+    //printf("hajar\n");
+    //printf(" %d ", parent[1]);
   }
 
   free_tas(t);
