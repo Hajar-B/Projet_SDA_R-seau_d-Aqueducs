@@ -302,13 +302,25 @@ int union_find(arete a, int* parent){
   return 0;
 }
 
-void kruskal_algo(ListOfCities * cities){
+float kruskal_algo(ListOfCities * cities, char* fichier){
+  FILE* fileOut = NULL;
   int nb_arete = (cities->number*(cities->number-1))/2;
   tas* t = creer_tas(nb_arete);
   arete tmp, *a;
   int ext;
   float distance_total=0;
 
+  fileOut = fopen(fichier, "w");
+  /*
+  if(population == 250000)
+    fileOut = fopen("graphe250000.dat", "w");
+  else if (population == 200000)
+    fileOut = fopen("graphe200000.dat", "w");
+  else if (population == 150000)
+    fileOut = fopen("graphe150000.dat", "w");
+  else
+    fileOut = fopen("graphe100000.dat", "w");
+  */
 
 
   for(int i=0; i<cities->number; i++){
@@ -329,30 +341,20 @@ void kruskal_algo(ListOfCities * cities){
     if(ext == 1){
       printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
       distance_total = distance_total + tmp.distance;
+      fprintf(fileOut, "%i %i\n", tmp.Ville_D, tmp.Ville_A);
     }
 
-    /*
-    if(ext == 0){
-      printf("\narete %d - %d forme un cycle\n", tmp.Ville_D, tmp.Ville_A);
-    }
-    else{
-      printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
-    }*/
-    //for(int k=0; k<cities->number; k++)
-      //printf(" %d ", parent[k]);
     tmp = supprimer_tas(t);
-    //printf("\n***********arete %d - %d forme un cyle\n", tmp.Ville_D, tmp.Ville_A);
-    //for(int k=0; k<cities->number; k++)
-    //printf("hajar\n");
-    //printf(" %d ", parent[1]);
-  }
-  printf("distance total = %f\n", distance_total);
 
+  }
+  //printf("distance total = %f\n", distance_total);
+  fclose(fileOut);
   free_tas(t);
   //free(tmp);
   //free(ext);
   free(a);
   free(parent);
+  return distance_total;
 }
 
 void affichage(tas* t){
