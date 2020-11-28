@@ -29,21 +29,26 @@ int main(int argc, char ** argv) {
 //--- READING cities
 //-----------------------------------------------------------------
   int popMin = atoi(argv[1]);
+  printf("%d\n", atoi(argv[1]));
 
   ListOfCities* cities;
   tas* t;
   arete* a;
   int nb_arete;
+  char fichier[100] = "graphe";
+  char extension[100] = ".dat";
   cities = citiesReader(popMin);
   //nb_arete = (cities->number*(cities->number-1))/2;
   //t = creer_tas(nb_arete);
   // ... just to check! This line can be removed.
 
+  //printf("%s\n", strcat(strcat(fichier, argv[1]), extension));
+
   for(int i=0; i<cities->number; i++){
     printf("%s %i %f %f\n", cities->name[i], cities->pop[i], cities->lon[i], cities->lat[i]);
   }
 
-  kruskal_algo(cities);
+  printf("distance total : %f\n",kruskal_algo(cities, strcat(strcat(fichier, argv[1]), extension)));
   /*
   for(int i=0; i<cities->number; i++){
     for(int j=i+1; j<cities->number; j++){
