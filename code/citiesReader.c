@@ -217,16 +217,15 @@ void echanger(tas* t, int pos1, int pos2){
 }
 
 void inserer_tas(tas* t, arete* a){
-  //int i;
   if(t->nb_element == t->capacite_max){
     printf("tableau plein\n");
     return;
   }
   t->tab[t->nb_element] = *a;
+
   entasser(t, t->nb_element);
   t->nb_element++;
-  //for(i=0; i<t->nb_element; i++)
-    //printf("%d - %d -> %fkm\n", t->tab[i].Ville_D, t->tab[i].Ville_A, t->tab[i].distance);
+
 }
 
 int filsDroit(int pos){
@@ -294,7 +293,7 @@ int union_find(arete a, int* parent){
   return 0;
 }
 
-float kruskal_algo(ListOfCities * cities, char* fichier){
+float kruskal_algo(ListOfCities * cities, char* fichier, tas* graphe){
   FILE* fileOut = NULL;
   int nb_arete = (cities->number*(cities->number-1))/2;
   tas* t = creer_tas(nb_arete);
@@ -302,6 +301,8 @@ float kruskal_algo(ListOfCities * cities, char* fichier){
   int ext;
   float distance_total=0;
 
+  //graphe = creer_tas((cities->number*(cities->number-1))/2);
+  //printf("********taille et capacite_max %d %d\n", graphe->nb_element, graphe->capacite_max);
   fileOut = fopen(fichier, "w");
 
   for(int i=0; i<cities->number; i++){
@@ -310,19 +311,21 @@ float kruskal_algo(ListOfCities * cities, char* fichier){
       inserer_tas(t,a);
     }
   }
-  affichage(t);
+
 
   int* parent = (int*)malloc(cities->number*sizeof(int));
   memset(parent, -1, sizeof(int)*cities->number);
 
   tmp = supprimer_tas(t);
-
+  //printf("********taille et capacite_max %d %d\n", cities->num, graphe->capacite_max);
   while(t->nb_element != 0){
+    a = creer_arete(tmp.Ville_D, tmp.Ville_A, cities->lon[tmp.Ville_D], cities->lat[tmp.Ville_D], cities->lon[tmp.Ville_A], cities->lat[tmp.Ville_A]);
     ext = union_find(tmp, parent);
     if(ext == 1){
       printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
       distance_total = distance_total + tmp.distance;
       fprintf(fileOut, "%i %i\n", tmp.Ville_D, tmp.Ville_A);
+      inserer_tas(graphe,a);
     }
 
     tmp = supprimer_tas(t);
