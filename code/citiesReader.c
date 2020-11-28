@@ -197,19 +197,11 @@ void free_tas(tas* t){
 }
 
 void entasser(tas* t, int pos){
-  //int i;
-  //printf("debut entasser\n");
-
-  //for(i=0; i<t->nb_element; i++)
-  //  printf("%d - %d = %fkm\n", t->tab[i].Ville_D, t->tab[i].Ville_A, t->tab[i].distance);
-
   while(t->tab[parent(pos)].distance > t->tab[pos].distance){
-    //printf("%f / %f\n",t->tab[parent(pos)].distance, t->tab[pos].distance);
     echanger(t, parent(pos), pos);
     pos = parent(pos);
   }
 
-  //printf("fin entasser\n");
 }
 
 int parent(int pos){
@@ -311,17 +303,6 @@ float kruskal_algo(ListOfCities * cities, char* fichier){
   float distance_total=0;
 
   fileOut = fopen(fichier, "w");
-  /*
-  if(population == 250000)
-    fileOut = fopen("graphe250000.dat", "w");
-  else if (population == 200000)
-    fileOut = fopen("graphe200000.dat", "w");
-  else if (population == 150000)
-    fileOut = fopen("graphe150000.dat", "w");
-  else
-    fileOut = fopen("graphe100000.dat", "w");
-  */
-
 
   for(int i=0; i<cities->number; i++){
     for(int j=i+1; j<cities->number; j++){
@@ -335,7 +316,7 @@ float kruskal_algo(ListOfCities * cities, char* fichier){
   memset(parent, -1, sizeof(int)*cities->number);
 
   tmp = supprimer_tas(t);
-  //printf("%d - %d\n", tmp.Ville_D, tmp.Ville_A);
+
   while(t->nb_element != 0){
     ext = union_find(tmp, parent);
     if(ext == 1){
@@ -347,11 +328,8 @@ float kruskal_algo(ListOfCities * cities, char* fichier){
     tmp = supprimer_tas(t);
 
   }
-  //printf("distance total = %f\n", distance_total);
   fclose(fileOut);
   free_tas(t);
-  //free(tmp);
-  //free(ext);
   free(a);
   free(parent);
   return distance_total;
