@@ -62,12 +62,46 @@ int main(int argc, char ** argv) {
   supprimer_tas(t);
   //affichage(t);
   supprimer_tas(t);
+  //affichage(t);
+  supprimer_tas(t);
+  //affichage(t);
+  supprimer_tas(t);
+  //affichage(t);
+  supprimer_tas(t);
+  //affichage(t);
+  supprimer_tas(t);
+  //affichage(t);
+  supprimer_tas(t);
+  //affichage(t);
+  supprimer_tas(t);
+  //affichage(t);
+  supprimer_tas(t);
+  //affichage(t);
+  supprimer_tas(t);
+  //affichage(t);
+  supprimer_tas(t);
+  //affichage(t);
+  supprimer_tas(t);
+  //affichage(t);
+  supprimer_tas(t);
+  supprimer_tas(t);
+  supprimer_tas(t);
+  supprimer_tas(t);
+  supprimer_tas(t);
+  supprimer_tas(t);
+  supprimer_tas(t);
+  supprimer_tas(t);
+  supprimer_tas(t);
+  printf("**********\n");
+  supprimer_tas(t);
+  supprimer_tas(t);
   supprimer_tas(t);
   supprimer_tas(t);
   supprimer_tas(t);
   supprimer_tas(t);
   free_tas(t);
   */
+
 //-----------------------------------------------------------------
 //--- COMPUTING complete graph
 //-----------------------------------------------------------------
