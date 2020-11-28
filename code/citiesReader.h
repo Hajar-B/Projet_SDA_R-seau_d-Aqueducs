@@ -52,7 +52,7 @@ arete supprimer_tas(tas* t);
 int find(int* parent, int sommet);
 int union_find(arete a, int* parent);
 
-void kruskal_algo(ListOfCities * cities);
+float kruskal_algo(ListOfCities * cities, char* fichier);
 
 void affichage(tas* t);
 
