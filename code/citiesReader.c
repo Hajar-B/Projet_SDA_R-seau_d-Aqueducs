@@ -255,7 +255,7 @@ arete supprimer_tas(tas* t){
   int pos=0;
   int tmp=0;
   arete a = t->tab[0];
-  printf("\nEXTRACTION DE : %d - %d => %fkm\n", t->tab[0].Ville_D, t->tab[0].Ville_A, t->tab[0].distance);
+  //printf("\nEXTRACTION DE : %d - %d => %fkm\n", t->tab[0].Ville_D, t->tab[0].Ville_A, t->tab[0].distance);
   //printf("taille = %d\n", t->nb_element-1);
 
   echanger(t, 0, t->nb_element-1);
@@ -307,6 +307,7 @@ void kruskal_algo(ListOfCities * cities){
   tas* t = creer_tas(nb_arete);
   arete tmp, *a;
   int ext;
+  float distance_total=0;
 
 
 
@@ -316,14 +317,20 @@ void kruskal_algo(ListOfCities * cities){
       inserer_tas(t,a);
     }
   }
+  affichage(t);
+
   int* parent = (int*)malloc(cities->number*sizeof(int));
   memset(parent, -1, sizeof(int)*cities->number);
+
   tmp = supprimer_tas(t);
   //printf("%d - %d\n", tmp.Ville_D, tmp.Ville_A);
   while(t->nb_element != 0){
     ext = union_find(tmp, parent);
-    if(ext == 1)
+    if(ext == 1){
       printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
+      distance_total = distance_total + tmp.distance;
+    }
+
     /*
     if(ext == 0){
       printf("\narete %d - %d forme un cycle\n", tmp.Ville_D, tmp.Ville_A);
@@ -339,6 +346,7 @@ void kruskal_algo(ListOfCities * cities){
     //printf("hajar\n");
     //printf(" %d ", parent[1]);
   }
+  printf("distance total = %f\n", distance_total);
 
   free_tas(t);
   //free(tmp);
