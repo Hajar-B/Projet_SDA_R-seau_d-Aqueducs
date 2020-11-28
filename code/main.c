@@ -38,74 +38,14 @@ int main(int argc, char ** argv) {
   char fichier[100] = "graphe";
   char extension[100] = ".dat";
   cities = citiesReader(popMin);
-  //nb_arete = (cities->number*(cities->number-1))/2;
-  //t = creer_tas(nb_arete);
-  // ... just to check! This line can be removed.
 
-  //printf("%s\n", strcat(strcat(fichier, argv[1]), extension));
 
   for(int i=0; i<cities->number; i++){
     printf("%s %i %f %f\n", cities->name[i], cities->pop[i], cities->lon[i], cities->lat[i]);
   }
+  float distance_total = kruskal_algo(cities, strcat(strcat(fichier, argv[1]), extension))
+  printf("distance total : %f\n",distance_total);
 
-  printf("distance total : %f\n",kruskal_algo(cities, strcat(strcat(fichier, argv[1]), extension)));
-  /*
-  for(int i=0; i<cities->number; i++){
-    for(int j=i+1; j<cities->number; j++){
-      a = creer_arete(i,j,cities->lon[i],cities->lat[i], cities->lon[j],cities->lat[j]);
-      //printf("\n==== %d %d %f\n", i,j, a->distance);
-      inserer_tas(t,a);
-      //kruskal_algo(t,a);
-    }
-    //break;
-  }
-  printf("\n\n");
-  affichage(t);
-  printf("\n");
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  //affichage(t);
-  supprimer_tas(t);
-  supprimer_tas(t);
-  supprimer_tas(t);
-  supprimer_tas(t);
-  supprimer_tas(t);
-  supprimer_tas(t);
-  supprimer_tas(t);
-  supprimer_tas(t);
-  supprimer_tas(t);
-  printf("**********\n");
-  supprimer_tas(t);
-  supprimer_tas(t);
-  supprimer_tas(t);
-  supprimer_tas(t);
-  supprimer_tas(t);
-  supprimer_tas(t);
-  free_tas(t);
-  */
 
 //-----------------------------------------------------------------
 //--- COMPUTING complete graph
