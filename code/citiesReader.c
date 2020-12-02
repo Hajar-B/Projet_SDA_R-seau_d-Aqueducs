@@ -186,6 +186,13 @@ tas* creer_tas(int capacite_max){
   return t;
 }
 
+graphe* creer_graphe(int n){
+  graphe* g = malloc(sizeof(graphe));
+  g->nb_sommet=0;
+  g->tab_sommet = malloc(n*sizeof(int));
+  return g;
+}
+
 void entasser(tas* t, int pos){
   while(t->tab[parent(pos)].distance > t->tab[pos].distance){
     echanger(t, parent(pos), pos);
@@ -291,7 +298,7 @@ int union_find(arete a, int* parent){
   return 0;
 }
 
-float kruskal_algo(ListOfCities * cities){
+float kruskal_algo(ListOfCities * cities, graphe* g){
   tas* t = creer_tas((cities->number*(cities->number-1))/2);
   arete* a;
   arete tmp;
@@ -315,6 +322,11 @@ float kruskal_algo(ListOfCities * cities){
     if(ext == 1){
       printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
       distance_total = distance_total + tmp.distance;
+      g->tab_sommet[g->nb_sommet] = tmp.Ville_D;
+      g->nb_sommet++;
+      g->tab_sommet[g->nb_sommet] = tmp.Ville_A;
+      g->nb_sommet++;
+
     }
     tmp = supprimer_tas(t);
   }

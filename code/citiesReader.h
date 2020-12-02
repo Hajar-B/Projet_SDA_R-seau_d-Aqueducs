@@ -28,12 +28,20 @@ struct tas{
   arete* tab;         //tableau
 };
 
+typedef struct graphe graphe;
+
+struct graphe{
+  int nb_sommet;
+  int* tab_sommet;
+};
+
 ListOfCities* citiesReader(int popMin);
 void freeListOfCities(ListOfCities * cities);
 
 float distance(float lon1, float lat1, float lon2, float lat2);
 arete* creer_arete(int ville_d, int ville_a, float lon1, float lat1, float lon2, float lat2);
 tas* creer_tas(int capacite_max);
+graphe* creer_graphe(int n);
 
 void entasser(tas* t, int pos);
 int parent(int pos);
@@ -50,7 +58,7 @@ arete supprimer_tas(tas* t);
 int find(int* parent, int sommet);
 int union_find(arete a, int* parent);
 
-float kruskal_algo(ListOfCities * cities);
+float kruskal_algo(ListOfCities * cities, graphe* g);
 
 void affichage(tas* t);
 
