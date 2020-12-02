@@ -6,6 +6,7 @@
 #include <math.h>
 
 
+
 /**
    Create a data structure ListOfCities and allocates the necessary space to store
    a given number of cities.
@@ -174,26 +175,15 @@ arete* creer_arete(int ville_d, int ville_a, float lon1, float lat1, float lon2,
   a->Ville_D = ville_d;
   a->Ville_A = ville_a;
   a->distance = distance(lon1, lat1, lon2, lat2);
-  a->est_visite = 0;
-}
-
-void free_arete(arete* a){
-  free(a);
+  return a;
 }
 
 tas* creer_tas(int capacite_max){
-  tas* t = malloc(sizeof(tas*));
+  tas* t = malloc(sizeof(tas));
   t->nb_element = 0;
   t->capacite_max = capacite_max;
-  t->tab = malloc(capacite_max*sizeof(arete*));
+  t->tab = malloc(capacite_max*sizeof(arete));
   return t;
-}
-
-void free_tas(tas* t){
-  /*int i;
-  for (i=0; i<t->nb_element; i++)
-    free_arete(&(t->tab[i]));*/
-  free(t);
 }
 
 void entasser(tas* t, int pos){
@@ -228,6 +218,16 @@ void inserer_tas(tas* t, arete* a){
 
 }
 
+void inserer_tas2(tas* t, arete* a){
+    int i = t->nb_element;
+    while(i>0 && (a->distance < t->tab[(i-1)/2].distance)){
+      t->tab[i] = t->tab[(i-1)/2];
+      i= (i-1)/2;
+    }
+    t->tab[i] = *a;
+    t->nb_element++;
+}
+
 int filsDroit(int pos){
   return 2*pos+2;
 }
@@ -236,7 +236,8 @@ int filsGauche(int pos){
   return 2*pos+1;
 }
 
-int plusGrandEnfant(tas* t, int pos){
+int plusPetitEnfant(tas* t, int pos){
+  //printf("%d VS %d\n", filsGauche(pos), filsDroit(pos));
   if(t->tab[filsGauche(pos)].distance < t->tab[filsDroit(pos)].distance)
     return filsGauche(pos);
   return filsDroit(pos);
@@ -245,47 +246,44 @@ int plusGrandEnfant(tas* t, int pos){
 arete supprimer_tas(tas* t){
   int pos=0;
   int tmp=0;
+  int continu=0;
   arete a = t->tab[0];
   //printf("\nEXTRACTION DE : %d - %d => %fkm\n", t->tab[0].Ville_D, t->tab[0].Ville_A, t->tab[0].distance);
-  //printf("taille = %d\n", t->nb_element-1);
-
   echanger(t, 0, t->nb_element-1);
+  //printf("taille = %d\n", t->nb_element);
 
-  while((t->tab[pos].distance > t->tab[plusGrandEnfant(t,pos)].distance) && (plusGrandEnfant(t,pos) < t->nb_element-1)){
-    tmp = plusGrandEnfant(t,pos);
-    //printf("%d %d\n", pos, plusGrandEnfant(t,pos));
-    echanger(t, pos, plusGrandEnfant(t,pos));
-
-    pos = tmp;
-    //affichage(t);
-    //printf("\n*********-----------------------------*********\n");
+  while((pos < t->nb_element/2) && continu==0){
+    //printf("i=%d j=%d\n", pos, plusGrandEnfant(t,pos) );
+    if((t->tab[pos].distance > t->tab[plusPetitEnfant(t,pos)].distance) && (plusPetitEnfant(t,pos) < t->nb_element-1)){
+      tmp = plusPetitEnfant(t,pos);
+      //printf("tmp = %d\n",tmp);
+      echanger(t, pos, plusPetitEnfant(t,pos));
+      pos = tmp;
+    }
+    else
+      continu = 1;
   }
   t->nb_element--;
+
   return a;
 }
 
 int find(int* parent, int sommet){
-
   if(parent[sommet] == -1)
     return sommet;
   return find(parent, parent[sommet]);
-    //sommet = find(parent, parent[sommet]);
-  //return sommet;
 }
 
 int union_find(arete a, int* parent){
   int x, y, xset, yset;
 
   x = find(parent, a.Ville_D);
-  //printf("x = %d\n", x);
   y = find(parent, a.Ville_A);
-  //printf("y = %d\n", y);
   if(x == y)
     return 0;
   xset = find(parent, x);
-  //printf("xset = %d\n", xset);
   yset = find(parent, y);
-  //printf("yset = %d\n", yset);
+
   if(xset != yset){
     parent[xset] = yset;
     return 1;
@@ -293,17 +291,12 @@ int union_find(arete a, int* parent){
   return 0;
 }
 
-float kruskal_algo(ListOfCities * cities, char* fichier, tas* graphe){
-  FILE* fileOut = NULL;
-  int nb_arete = (cities->number*(cities->number-1))/2;
-  tas* t = creer_tas(nb_arete);
-  arete tmp, *a;
+float kruskal_algo(ListOfCities * cities){
+  tas* t = creer_tas((cities->number*(cities->number-1))/2);
+  arete* a;
+  arete tmp;
+  float distance_total = 0;
   int ext;
-  float distance_total=0;
-
-  //graphe = creer_tas((cities->number*(cities->number-1))/2);
-  //printf("********taille et capacite_max %d %d\n", graphe->nb_element, graphe->capacite_max);
-  fileOut = fopen(fichier, "w");
 
   for(int i=0; i<cities->number; i++){
     for(int j=i+1; j<cities->number; j++){
@@ -311,30 +304,20 @@ float kruskal_algo(ListOfCities * cities, char* fichier, tas* graphe){
       inserer_tas(t,a);
     }
   }
-
-
+  //affichage(t);
+  //printf("\ntaille = %d\n", t->nb_element);
   int* parent = (int*)malloc(cities->number*sizeof(int));
   memset(parent, -1, sizeof(int)*cities->number);
 
   tmp = supprimer_tas(t);
-  //printf("********taille et capacite_max %d %d\n", cities->num, graphe->capacite_max);
   while(t->nb_element != 0){
-    a = creer_arete(tmp.Ville_D, tmp.Ville_A, cities->lon[tmp.Ville_D], cities->lat[tmp.Ville_D], cities->lon[tmp.Ville_A], cities->lat[tmp.Ville_A]);
     ext = union_find(tmp, parent);
     if(ext == 1){
       printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
       distance_total = distance_total + tmp.distance;
-      fprintf(fileOut, "%i %i\n", tmp.Ville_D, tmp.Ville_A);
-      inserer_tas(graphe,a);
     }
-
     tmp = supprimer_tas(t);
-
   }
-  fclose(fileOut);
-  free_tas(t);
-  free(a);
-  free(parent);
   return distance_total;
 }
 
