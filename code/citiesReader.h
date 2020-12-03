@@ -48,7 +48,7 @@ int parent(int pos);
 void echanger(tas* t, int pos1, int pos2);
 void inserer_tas(tas* t, arete* a);
 
-void inserer_tas2(tas* t, arete* a);
+//void inserer_tas2(tas* t, arete* a);
 
 int filsDroit(int pos);
 int filsGauche(int pos);

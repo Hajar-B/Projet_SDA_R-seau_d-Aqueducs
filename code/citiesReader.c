@@ -5,8 +5,6 @@
 #include <string.h>
 #include <math.h>
 
-
-
 /**
    Create a data structure ListOfCities and allocates the necessary space to store
    a given number of cities.
@@ -42,8 +40,6 @@ void freeListOfCities(ListOfCities * cities){
   free(cities->lat);
   free(cities);
 }
-
-
 
 /**
    Count the number of cities with population greater than or equal to 'popMin'
@@ -198,7 +194,6 @@ void entasser(tas* t, int pos){
     echanger(t, parent(pos), pos);
     pos = parent(pos);
   }
-
 }
 
 int parent(int pos){
@@ -224,7 +219,7 @@ void inserer_tas(tas* t, arete* a){
   t->nb_element++;
 
 }
-
+/*
 void inserer_tas2(tas* t, arete* a){
     int i = t->nb_element;
     while(i>0 && (a->distance < t->tab[(i-1)/2].distance)){
@@ -233,7 +228,7 @@ void inserer_tas2(tas* t, arete* a){
     }
     t->tab[i] = *a;
     t->nb_element++;
-}
+}*/
 
 int filsDroit(int pos){
   return 2*pos+2;
@@ -320,7 +315,7 @@ float kruskal_algo(ListOfCities * cities, graphe* g){
   while(t->nb_element != 0){
     ext = union_find(tmp, parent);
     if(ext == 1){
-      printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
+      //printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
       distance_total = distance_total + tmp.distance;
       g->tab_sommet[g->nb_sommet] = tmp.Ville_D;
       g->nb_sommet++;
