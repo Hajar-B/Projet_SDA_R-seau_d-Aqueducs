@@ -12,9 +12,9 @@ set xlabel "Nombre d'elements ajoutes" font "Helvetica,24"
 set ylabel "Temps amorti" font "Helvetica,24"
 
 # Nom du fichier Postscript en sortie
-set output 'time_tas_insertion_c_200000.pdf'
+set output 'time_tas_suppression2_c_200000.pdf'
 
-plot [0:60][0:600] 'time_tas_insertion_c.plot' using 1:3 w lines title "Amortized C"
+plot [0:60][0:1500] 'time_tas_suppression2_c.plot' using 1:3 w lines title "tableau fixe", 'time_tas_suppression3_c.plot' using 1:3 w lines title "tableau dynamique"
 
 ###############################################################
 ###########  Affichage de l'espace mémoire gaspillé ###########
@@ -23,6 +23,6 @@ plot [0:60][0:600] 'time_tas_insertion_c.plot' using 1:3 w lines title "Amortize
 set ylabel "Memoire gaspillee" font "Helvetica,24"
 
 # Nom du fichier Postscript en sortie
-set output 'wasted_memory_tas_insertion_c_200000.pdf'
+set output 'wasted_memory_tas_suppression2_c_200000.pdf'
 
-plot 'memory_tas_insertion_c.plot' using 1:2 w lines title 'Espace memoire inutilisé pour insertions', 'memory_tas_suppression_c.plot' using 1:2 w lines title 'Espace memoire inutilisé pour suppressions'
+plot 'waste_tas_suppression2_c.plot' using 1:2 w lines title 'tableau fixe', 'waste_tas_suppression3_c.plot' using 1:2 w lines title 'Tableau dynamique'
