@@ -1,9 +1,13 @@
 #include "citiesReader.h"
+#include "arraylist.h"
+#include "analyzer.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
+
 
 /**
    Create a data structure ListOfCities and allocates the necessary space to store
@@ -294,6 +298,15 @@ int union_find(arete a, int* parent){
 }
 
 float kruskal_algo(ListOfCities * cities, graphe* g){
+  // Analyse du temps pris par les opérations.
+  analyzer_t * time_analysis = analyzer_create();
+  // Analyse de l'espace mémoire inutilisé.
+  analyzer_t * memory_analysis = analyzer_create();
+  // Mesure de la durée d'une opération.
+  struct timespec before, after;
+  clockid_t clk_id = CLOCK_REALTIME;
+
+
   tas* t = creer_tas((cities->number*(cities->number-1))/2);
   arete* a;
   arete tmp;
@@ -303,9 +316,20 @@ float kruskal_algo(ListOfCities * cities, graphe* g){
   for(int i=0; i<cities->number; i++){
     for(int j=i+1; j<cities->number; j++){
       a = creer_arete(i,j,cities->lon[i],cities->lat[i], cities->lon[j],cities->lat[j]);
+      clock_gettime(clk_id, &before);
       inserer_tas(t,a);
+      clock_gettime(clk_id, &after);
+      // Enregistrement du temps pris par l'opération
+      analyzer_append(time_analysis, after.tv_nsec - before.tv_nsec);
+      // Enregistrement de l'espace mémoire non-utilisé.
+      analyzer_append(memory_analysis,t->capacite_max-t->nb_element);
     }
   }
+  fprintf(stderr, "Total cost pour triage des arates: %Lf\n", get_total_cost(time_analysis));
+  save_values(time_analysis, "../plots/time_tas_insertion_c.plot");
+  save_values(memory_analysis, "../plots/memory_tas_insertion_c.plot");
+  analyzer_destroy(time_analysis);
+  analyzer_destroy(memory_analysis);
   //affichage(t);
   //printf("\ntaille = %d\n", t->nb_element);
   int* parent = (int*)malloc(cities->number*sizeof(int));

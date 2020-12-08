@@ -48,6 +48,7 @@ int main(int argc, char ** argv) {
   //arete* a;
   float distance;
   graphe* g = creer_graphe((cities->number*(cities->number-1))/2);
+  printf("\nnb arete = %d\n",(cities->number*(cities->number-1))/2);
 
   // ... just to check! This line can be removed.
   //for(int i=0; i<cities->number; i++){
