@@ -25,4 +25,4 @@ set ylabel "Memoire gaspillee" font "Helvetica,24"
 # Nom du fichier Postscript en sortie
 set output 'wasted_memory_tas_insertion_c_200000.pdf'
 
-plot 'memory_tas_insertion_c.plot' using 1:2 w lines title "Espace memoire inutilise C"
+plot 'memory_tas_insertion_c.plot' using 1:2 w lines title 'Espace memoire inutilisé pour insertions', 'memory_tas_suppression_c.plot' using 1:2 w lines title 'Espace memoire inutilisé pour suppressions'

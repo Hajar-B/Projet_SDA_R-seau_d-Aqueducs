@@ -269,7 +269,13 @@ arete supprimer_tas(tas* t){
     else
       continu = 1;
   }
+
   t->nb_element--;
+
+  if (t->nb_element<=t->capacite_max/4 && t->nb_element>4){
+    t->capacite_max /=2;
+    t->tab = (arete *) realloc(t->tab, sizeof(arete) * t->capacite_max);
+  }
 
   return a;
 }
@@ -302,6 +308,7 @@ float kruskal_algo(ListOfCities * cities, graphe* g){
   analyzer_t * time_analysis = analyzer_create();
   // Analyse de l'espace mémoire inutilisé.
   analyzer_t * memory_analysis = analyzer_create();
+  analyzer_t * memory_analysis2 = analyzer_create();
   // Mesure de la durée d'une opération.
   struct timespec before, after;
   clockid_t clk_id = CLOCK_REALTIME;
@@ -328,8 +335,7 @@ float kruskal_algo(ListOfCities * cities, graphe* g){
   fprintf(stderr, "Total cost pour triage des arates: %Lf\n", get_total_cost(time_analysis));
   save_values(time_analysis, "../plots/time_tas_insertion_c.plot");
   save_values(memory_analysis, "../plots/memory_tas_insertion_c.plot");
-  analyzer_destroy(time_analysis);
-  analyzer_destroy(memory_analysis);
+
   //affichage(t);
   //printf("\ntaille = %d\n", t->nb_element);
   int* parent = (int*)malloc(cities->number*sizeof(int));
@@ -348,7 +354,15 @@ float kruskal_algo(ListOfCities * cities, graphe* g){
 
     }
     tmp = supprimer_tas(t);
+    analyzer_append(memory_analysis2,t->capacite_max-t->nb_element);
   }
+  free(t->tab);
+  free(t);
+  analyzer_append(memory_analysis2,t->capacite_max-t->nb_element);
+  save_values(memory_analysis2, "../plots/memory_tas_suppression_c.plot");
+
+  analyzer_destroy(time_analysis);
+  analyzer_destroy(memory_analysis2);
   return distance_total;
 }
 
