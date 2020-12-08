@@ -1,0 +1,28 @@
+# Script GNUPLOT
+# Dire que le fichier de sortie est un fichier Postscript
+set terminal pdf color
+
+set xlabel "Nombre d'elements ajoutes" font "Helvetica,24"
+
+
+##############################################################
+###########  Affichage des temps de calcul amortis ###########
+##############################################################
+# Titre de l'axe des ordonnées
+set ylabel "Temps amorti" font "Helvetica,24"
+
+# Nom du fichier Postscript en sortie
+set output 'time_tas_insertion_c_200000.pdf'
+
+plot [0:60][0:600] 'time_tas_insertion_c.plot' using 1:3 w lines title "Amortized C"
+
+###############################################################
+###########  Affichage de l'espace mémoire gaspillé ###########
+###############################################################
+# Titre de l'axe des ordonnées
+set ylabel "Memoire gaspillee" font "Helvetica,24"
+
+# Nom du fichier Postscript en sortie
+set output 'wasted_memory_tas_insertion_c_200000.pdf'
+
+plot 'memory_tas_insertion_c.plot' using 1:2 w lines title "Espace memoire inutilise C"
