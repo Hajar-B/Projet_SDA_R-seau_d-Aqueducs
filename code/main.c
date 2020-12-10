@@ -32,6 +32,8 @@ int main(int argc, char ** argv) {
   analyzer_t * time_analysis1 = analyzer_create();
   analyzer_t * time_analysis2 = analyzer_create();
   analyzer_t * time_analysis3 = analyzer_create();
+  analyzer_t * time_analysis4 = analyzer_create();
+  analyzer_t * time_analysis5 = analyzer_create();
   struct timespec before, after;
   clockid_t clk_id = CLOCK_REALTIME;
 
@@ -40,6 +42,12 @@ int main(int argc, char ** argv) {
 
   struct timespec before3, after3;
   clockid_t clk_id3 = CLOCK_REALTIME;
+
+  struct timespec before4, after4;
+  clockid_t clk_id4 = CLOCK_REALTIME;
+
+  struct timespec before5, after5;
+  clockid_t clk_id5 = CLOCK_REALTIME;
 
   if( argc != 2 ){
     perror("Veuillez passer une population minimale en paramètre du programme");
@@ -57,6 +65,11 @@ int main(int argc, char ** argv) {
   //arete* a;
   float distance;
   graphe* g = creer_graphe((cities->number*(cities->number-1))/2);
+  graphe* g1 = creer_graphe((cities->number*(cities->number-1))/2);
+  graphe* g2 = creer_graphe((cities->number*(cities->number-1))/2);
+  graphe* g3 = creer_graphe((cities->number*(cities->number-1))/2);
+
+
   // ... just to check! This line can be removed.
   //for(int i=0; i<cities->number; i++){
     //printf("%s %i %f %f\n", cities->name[i], cities->pop[i], cities->lon[i], cities->lat[i]);
@@ -69,21 +82,23 @@ int main(int argc, char ** argv) {
   analyzer_append(time_analysis1, after.tv_nsec-before.tv_nsec);
   fprintf(stderr,"Total cost: %Lf\n", get_total_cost(time_analysis1));
   */
-  printf("\n*** FIXE ***\n");
+
+  printf("\n*** FIXE UNION O(1) ***\n");
   clock_gettime(clk_id2, &before2);
-  distance = kruskal_algo4(cities, g);
+  distance = kruskal_algo2(cities, g);
   clock_gettime(clk_id2, &after2);
   printf("\ndistance = %f\n", distance);
   analyzer_append(time_analysis2, after2.tv_nsec-before2.tv_nsec);
   fprintf(stderr,"Total cost: %Lf\n", get_total_cost(time_analysis2));
 
-  printf("\n*** DYNAMIQUE ***\n");
+  printf("\n*** DYNAMIQUE UNION O(1) ***\n");
   clock_gettime(clk_id3, &before3);
-  distance = kruskal_algo5(cities, g);
+  distance = kruskal_algo3(cities, g1);
   clock_gettime(clk_id3, &after3);
   printf("\ndistance = %f\n", distance);
   analyzer_append(time_analysis3, after3.tv_nsec-before3.tv_nsec);
   fprintf(stderr,"Total cost: %Lf\n", get_total_cost(time_analysis3));
+
 
 //-----------------------------------------------------------------
 //--- COMPUTING complete graph
