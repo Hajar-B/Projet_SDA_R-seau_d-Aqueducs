@@ -331,6 +331,28 @@ int union_find(arete a, int* parent){
   return 0;
 }
 
+int find2(compressionC* p, int sommet){
+  if(p[sommet].parent != sommet)
+    p[sommet].parent = find2(p, p[sommet].parent);
+  return p[sommet].parent;
+}
+int union_find2(arete a, compressionC* parent){
+  int x = find2(parent, a.Ville_D);
+  int y = find2(parent, a.Ville_A);
+  if (x==y)
+    return 0;
+  if(parent[x].rank < parent[y].rank)
+    parent[x].parent = y;
+  else if (parent[x].rank < parent[y].rank)
+    parent[y].parent = x;
+  else{
+    parent[y].parent = x;
+    parent[x].rank++;
+  }
+  return 1;
+}
+
+
 float kruskal_algo(ListOfCities * cities, graphe* g){
   // Analyse du temps pris par les opérations.
   analyzer_t * time_analysis = analyzer_create();
@@ -462,8 +484,269 @@ float kruskal_algo(ListOfCities * cities, graphe* g){
   return distance_total;
 }
 
+
+
+
+float kruskal_algo2(ListOfCities * cities, graphe* g){
+  tas* t = creer_tas((cities->number*(cities->number-1))/2);
+  tas* t2 = creer_tas(10);
+  arete* a;
+  arete tmp;
+  arete tmp2;
+  float distance_total = 0;
+  int ext;
+
+  for(int i=0; i<cities->number; i++){
+    for(int j=i+1; j<cities->number; j++){
+      a = creer_arete(i,j,cities->lon[i],cities->lat[i], cities->lon[j],cities->lat[j]);
+      inserer_tas(t,a);
+      inserer_tas2(t2,a);
+    }
+  }
+
+  //affichage(t);
+  //printf("\ntaille = %d\n", t->nb_element);
+  int* parent = (int*)malloc(cities->number*sizeof(int));
+  memset(parent, -1, sizeof(int)*cities->number);
+
+  tmp = supprimer_tas(t);
+  tmp2 = supprimer_tas2(t2);
+
+  while(t->nb_element != 0 && t2->nb_element != 0){
+    ext = union_find(tmp, parent);
+    if(ext == 1){
+      //printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
+      distance_total = distance_total + tmp.distance;
+      g->tab_sommet[g->nb_sommet] = tmp.Ville_D;
+      g->nb_sommet++;
+      g->tab_sommet[g->nb_sommet] = tmp.Ville_A;
+      g->nb_sommet++;
+    }
+    tmp = supprimer_tas(t);
+    tmp2 = supprimer_tas2(t2);
+  }
+  free(t->tab);
+  free(t);
+  free(t2->tab);
+  free(t2);
+  return distance_total;
+}
+
+float kruskal_algo3(ListOfCities * cities, graphe* g){
+  tas* t = creer_tas((cities->number*(cities->number-1))/2);
+  tas* t2 = creer_tas(10);
+  arete* a;
+  arete tmp;
+  arete tmp2;
+  float distance_total = 0;
+  int ext;
+  compressionC* tab = (compressionC*)malloc(cities->number*sizeof(compressionC));
+  for(int i=0; i<cities->number; i++){
+    tab[i].parent = i;
+    tab[i].rank = 0;
+  }
+
+  for(int i=0; i<cities->number; i++){
+    for(int j=i+1; j<cities->number; j++){
+      a = creer_arete(i,j,cities->lon[i],cities->lat[i], cities->lon[j],cities->lat[j]);
+      inserer_tas(t,a);
+      inserer_tas2(t2,a);
+    }
+  }
+
+  //affichage(t);
+  //printf("\ntaille = %d\n", t->nb_element);
+  //int* parent = (int*)malloc(cities->number*sizeof(int));
+  //memset(parent, -1, sizeof(int)*cities->number);
+
+  tmp = supprimer_tas(t);
+  tmp2 = supprimer_tas2(t2);
+
+  while(t->nb_element != 0 && t2->nb_element != 0){
+    ext = union_find2(tmp, tab);
+    if(ext == 1){
+      //printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
+      distance_total = distance_total + tmp.distance;
+      g->tab_sommet[g->nb_sommet] = tmp.Ville_D;
+      g->nb_sommet++;
+      g->tab_sommet[g->nb_sommet] = tmp.Ville_A;
+      g->nb_sommet++;
+    }
+    tmp = supprimer_tas(t);
+    tmp2 = supprimer_tas2(t2);
+  }
+  free(t->tab);
+  free(t);
+  free(t2->tab);
+  free(t2);
+  return distance_total;
+}
+
+
+
 void affichage(tas* t){
   int i;
   for(i=0; i<t->nb_element; i++)
       printf("%d - %d == %fkm\n", t->tab[i].Ville_D, t->tab[i].Ville_A, t->tab[i].distance);
+}
+
+
+/* ==================================================================================================== */
+/* ==================================================================================================== */
+
+float kruskal_algo4(ListOfCities * cities, graphe* g){
+  // Analyse du temps pris par les opérations.
+  analyzer_t * time_analysis1 = analyzer_create();
+  analyzer_t * time_analysis2 = analyzer_create();
+  // Analyse de l'espace mémoire inutilisé.
+  analyzer_t * memory_analysis1 = analyzer_create();
+  analyzer_t * memory_analysis2 = analyzer_create();
+  // Mesure de la durée d'une opération.
+  struct timespec before1, after1;
+  struct timespec before2, after2;
+  clockid_t clk_id1 = CLOCK_REALTIME;
+  clockid_t clk_id2 = CLOCK_REALTIME;
+
+  tas* t = creer_tas((cities->number*(cities->number-1))/2);
+  arete* a;
+  arete tmp;
+  float distance_total = 0;
+  int ext;
+
+  for(int i=0; i<cities->number; i++){
+    for(int j=i+1; j<cities->number; j++){
+      a = creer_arete(i,j,cities->lon[i],cities->lat[i], cities->lon[j],cities->lat[j]);
+      clock_gettime(clk_id1, &before1);
+      inserer_tas(t,a);
+      clock_gettime(clk_id1, &after1);
+      // Enregistrement du temps pris par l'opération
+      analyzer_append(time_analysis1, after1.tv_nsec - before1.tv_nsec);
+      // Enregistrement de l'espace mémoire non-utilisé.
+      analyzer_append(memory_analysis1,t->capacite_max-t->nb_element);
+    }
+  }
+  fprintf(stderr, "Total cost pour triage des arates: %Lf\n", get_total_cost(time_analysis1));
+  fprintf(stderr, "Average cost: %Lf\n", get_average_cost(time_analysis1));
+  save_values(time_analysis1, "../plots/temps_amortie_insertion_fixe_250000.plot");
+  save_values(memory_analysis1, "../plots/waste_memory_insertion_fixe_250000.plot");
+
+  int* parent = (int*)malloc(cities->number*sizeof(int));
+  memset(parent, -1, sizeof(int)*cities->number);
+
+  clock_gettime(clk_id2, &before2);
+  tmp = supprimer_tas(t);
+  clock_gettime(clk_id2, &after2);
+  analyzer_append(time_analysis2, after2.tv_nsec - before2.tv_nsec);
+  analyzer_append(memory_analysis2, t->capacite_max-t->nb_element);
+
+  while(t->nb_element != 0){
+    ext = union_find(tmp, parent);
+    if(ext == 1){
+      //printf("\narete %d - %d est un success\n", tmp.Ville_D, tmp.Ville_A);
+      distance_total = distance_total + tmp.distance;
+      g->tab_sommet[g->nb_sommet] = tmp.Ville_D;
+      g->nb_sommet++;
+      g->tab_sommet[g->nb_sommet] = tmp.Ville_A;
+      g->nb_sommet++;
+    }
+    clock_gettime(clk_id2, &before2);
+    tmp = supprimer_tas(t);
+    clock_gettime(clk_id2, &after2);
+    analyzer_append(time_analysis2, after2.tv_nsec - before2.tv_nsec);
+    analyzer_append(memory_analysis2,t->capacite_max-t->nb_element);
+  }
+  //save_values(time_analysis2, "../plots/temps_amortie_suppression_fixe.plot");
+  //save_values(memory_analysis2, "../plots/waste_memory_suppression_fixe.plot");
+  free(t->tab);
+  free(t);
+  fprintf(stderr, "Total cost pour selection des aretes: %Lf\n", get_total_cost(time_analysis1));
+  fprintf(stderr, "Average cost: %Lf\n", get_average_cost(time_analysis1));
+  analyzer_append(memory_analysis2,t->capacite_max-t->nb_element);
+  save_values(time_analysis2, "../plots/temps_amortie_suppression_fixe_250000.plot");
+  save_values(memory_analysis2, "../plots/waste_memory_suppression_fixe_250000.plot");
+
+  analyzer_destroy(time_analysis1);
+  analyzer_destroy(time_analysis2);
+  analyzer_destroy(memory_analysis1);
+  analyzer_destroy(memory_analysis2);
+  return distance_total;
+}
+
+/* ==================================================================================================== */
+/* ==================================================================================================== */
+
+float kruskal_algo5(ListOfCities * cities, graphe* g){
+  // Analyse du temps pris par les opérations.
+  analyzer_t * time_analysis1 = analyzer_create(); //insertion
+  analyzer_t * time_analysis2 = analyzer_create(); //suppression
+  // Analyse de l'espace mémoire inutilisé.
+  analyzer_t * memory_analysis1 = analyzer_create(); //insertion
+  analyzer_t * memory_analysis2 = analyzer_create(); //suppression
+  // Mesure de la durée d'une opération.
+  struct timespec before1, after1; //insertion
+  struct timespec before2, after2; //suppression
+  clockid_t clk_id1 = CLOCK_REALTIME; //insertion
+  clockid_t clk_id2 = CLOCK_REALTIME; //suppression
+
+  tas* t2 = creer_tas(20);
+  arete* a;
+  arete tmp2;
+  float distance_total = 0;
+  int ext;
+
+  for(int i=0; i<cities->number; i++){
+    for(int j=i+1; j<cities->number; j++){
+      a = creer_arete(i,j,cities->lon[i],cities->lat[i], cities->lon[j],cities->lat[j]);
+
+      clock_gettime(clk_id1, &before1);
+      inserer_tas2(t2,a);
+      clock_gettime(clk_id1, &after1);
+      // Enregistrement du temps pris par l'opération
+      analyzer_append(time_analysis1, after1.tv_nsec - before1.tv_nsec);
+      // Enregistrement de l'espace mémoire non-utilisé.
+      analyzer_append(memory_analysis1,t2->capacite_max-t2->nb_element);
+    }
+  }
+  fprintf(stderr, "Total cost pour triage des arates: %Lf\n", get_total_cost(time_analysis1));
+  fprintf(stderr, "Average cost: %Lf\n", get_average_cost(time_analysis1));
+  save_values(time_analysis1, "../plots/temps_amortie_insertion_dynamique_250000.plot");
+  save_values(memory_analysis1, "../plots/waste_memory_insertion_dynamique_250000.plot");
+
+  int* parent = (int*)malloc(cities->number*sizeof(int));
+  memset(parent, -1, sizeof(int)*cities->number);
+
+  clock_gettime(clk_id2, &before2);
+  tmp2 = supprimer_tas2(t2);
+  clock_gettime(clk_id2, &after2);
+  analyzer_append(time_analysis2, after2.tv_nsec - before2.tv_nsec);
+  analyzer_append(memory_analysis2,t2->capacite_max-t2->nb_element);
+
+  while(t2->nb_element != 0){
+    ext = union_find(tmp2, parent);
+    if(ext == 1){
+      distance_total = distance_total + tmp2.distance;
+      g->tab_sommet[g->nb_sommet] = tmp2.Ville_D;
+      g->nb_sommet++;
+      g->tab_sommet[g->nb_sommet] = tmp2.Ville_A;
+      g->nb_sommet++;
+    }
+    clock_gettime(clk_id2, &before2);
+    tmp2 = supprimer_tas2(t2);
+    clock_gettime(clk_id2, &after2);
+    analyzer_append(time_analysis2, after2.tv_nsec - before2.tv_nsec);
+    analyzer_append(memory_analysis2,t2->capacite_max-t2->nb_element);
+  }
+  free(t2->tab);
+  free(t2);
+  fprintf(stderr, "Total cost selection des aretes: %Lf\n", get_total_cost(time_analysis2));
+  fprintf(stderr, "Average cost: %Lf\n", get_average_cost(time_analysis2));
+  analyzer_append(memory_analysis2,t2->capacite_max-t2->nb_element);
+  save_values(time_analysis2, "../plots/temps_amortie_suppression_dynamique_250000.plot");
+  save_values(memory_analysis2, "../plots/waste_memory_suppression_dynamique_250000.plot");
+
+  analyzer_destroy(time_analysis1);
+  analyzer_destroy(time_analysis2);
+  analyzer_destroy(memory_analysis1);
+  analyzer_destroy(memory_analysis2);
+  return distance_total;
 }
