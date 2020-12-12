@@ -12,12 +12,12 @@ set xlabel "Nombre d'elements ajoutes" font "Helvetica,24"
 set ylabel "Temps amorti" font "Helvetica,24"
 
 # Nom du fichier Postscript en sortie
-set output 'temps_amortie_kruskal.pdf'
+set output 'temps_amortie_kruskal_fixe_and_dynamique.pdf'
 
-plot 'temps_amortie_kruskal_dynamique_250000.plot' using 1:3 w lines title "dynamique", 'temps_amortie_kruskal_fixe_250000.plot' using 1:3 w lines title "fixe"
-plot 'temps_amortie_kruskal_dynamique_200000.plot' using 1:3 w lines title "dynamique", 'temps_amortie_kruskal_fixe_200000.plot' using 1:3 w lines title "fixe"
-plot 'temps_amortie_kruskal_dynamique_150000.plot' using 1:3 w lines title "dynamique", 'temps_amortie_kruskal_fixe_150000.plot' using 1:3 w lines title "fixe"
-plot 'temps_amortie_kruskal_dynamique_100000.plot' using 1:3 w lines title "dynamique", 'temps_amortie_kruskal_fixe_100000.plot' using 1:3 w lines title "fixe"
+plot 'temps_amortie_kruskal_dynamique_250000.plot' using 1:3 w lines title "dynamique", 'temps_amortie_kruskal_fixe_250000.plot' using 1:3 w lines title "fixe", 'temps_amortie_kruskal_fixe+dynamique_250000.plot' using 1:3 w lines title "fixe+dynamique"
+plot 'temps_amortie_kruskal_dynamique_200000.plot' using 1:3 w lines title "dynamique", 'temps_amortie_kruskal_fixe_200000.plot' using 1:3 w lines title "fixe", 'temps_amortie_kruskal_fixe+dynamique_200000.plot' using 1:3 w lines title "fixe+dynamique"
+plot 'temps_amortie_kruskal_dynamique_150000.plot' using 1:3 w lines title "dynamique", 'temps_amortie_kruskal_fixe_150000.plot' using 1:3 w lines title "fixe", 'temps_amortie_kruskal_fixe+dynamique_150000.plot' using 1:3 w lines title "fixe+dynamique"
+plot 'temps_amortie_kruskal_dynamique_100000.plot' using 1:3 w lines title "dynamique", 'temps_amortie_kruskal_fixe_100000.plot' using 1:3 w lines title "fixe", 'temps_amortie_kruskal_fixe+dynamique_100000.plot' using 1:3 w lines title "fixe+dynamique"
 
 ###############################################################
 ###########  Affichage de l'espace mémoire gaspillé ###########
@@ -26,9 +26,9 @@ plot 'temps_amortie_kruskal_dynamique_100000.plot' using 1:3 w lines title "dyna
 set ylabel "Memoire gaspillee" font "Helvetica,24"
 
 # Nom du fichier Postscript en sortie
-set output 'wasted_memory_kruskal.pdf'
+set output 'wasted_memory_kruskal_fixe_and_dynamique.pdf'
 
-plot 'waste_memory_kruskal_dynamique_250000.plot' using 1:2 w lines title 'dynamique', 'waste_memory_kruskal_fixe_250000.plot' using 1:2 w lines title 'fixe'
-plot 'waste_memory_kruskal_dynamique_200000.plot' using 1:2 w lines title 'dynamique', 'waste_memory_kruskal_fixe_200000.plot' using 1:2 w lines title 'fixe'
-plot 'waste_memory_kruskal_dynamique_150000.plot' using 1:2 w lines title 'dynamique', 'waste_memory_kruskal_fixe_150000.plot' using 1:2 w lines title 'fixe'
-plot 'waste_memory_kruskal_dynamique_100000.plot' using 1:2 w lines title 'dynamique', 'waste_memory_kruskal_fixe_100000.plot' using 1:2 w lines title 'fixe'
+plot 'waste_memory_kruskal_dynamique_250000.plot' using 1:2 w lines title 'dynamique', 'waste_memory_kruskal_fixe_250000.plot' using 1:2 w lines title 'fixe', 'waste_memory_kruskal_fixe+dynamique_250000.plot' using 1:3 w lines title "fixe+dynamique"
+plot 'waste_memory_kruskal_dynamique_200000.plot' using 1:2 w lines title 'dynamique', 'waste_memory_kruskal_fixe_200000.plot' using 1:2 w lines title 'fixe', 'waste_memory_kruskal_fixe+dynamique_200000.plot' using 1:3 w lines title "fixe+dynamique"
+plot 'waste_memory_kruskal_dynamique_150000.plot' using 1:2 w lines title 'dynamique', 'waste_memory_kruskal_fixe_150000.plot' using 1:2 w lines title 'fixe', 'waste_memory_kruskal_fixe+dynamique_150000.plot' using 1:3 w lines title "fixe+dynamique"
+plot 'waste_memory_kruskal_dynamique_100000.plot' using 1:2 w lines title 'dynamique', 'waste_memory_kruskal_fixe_100000.plot' using 1:2 w lines title 'fixe', 'waste_memory_kruskal_fixe+dynamique_100000.plot' using 1:3 w lines title "fixe+dynamique" 

@@ -99,6 +99,14 @@ int main(int argc, char ** argv) {
   analyzer_append(time_analysis3, after3.tv_nsec-before3.tv_nsec);
   fprintf(stderr,"Total cost: %Lf\n", get_total_cost(time_analysis3));
 
+  printf("\n*** FIXE + DYNAMIQUE UNION O(1) ***\n");
+  clock_gettime(clk_id4, &before4);
+  distance = kruskal_algo4(cities, g2);
+  clock_gettime(clk_id4, &after4);
+  printf("\ndistance = %f\n", distance);
+  analyzer_append(time_analysis4, after4.tv_nsec-before4.tv_nsec);
+  fprintf(stderr,"Total cost: %Lf\n", get_total_cost(time_analysis4));
+
 
 //-----------------------------------------------------------------
 //--- COMPUTING complete graph
@@ -111,7 +119,7 @@ int main(int argc, char ** argv) {
    Dans votre rendu, cette fonction prendra un graphe en argument,
    pas une liste de villes.
   */
-  //saveGraph(g);
+  saveGraph(g2);
   analyzer_destroy(time_analysis1);
   analyzer_destroy(time_analysis2);
   analyzer_destroy(time_analysis3);
