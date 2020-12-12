@@ -69,15 +69,10 @@ int union_find(arete a, int* parent);
 int find2(compressionC* p, int sommet);
 int union_find2(arete a, compressionC* parent);
 
-float kruskal_algo(ListOfCities * cities, graphe* g);
+float kruskal_algo1(ListOfCities * cities, graphe* g);
 float kruskal_algo2(ListOfCities * cities, graphe* g);
 float kruskal_algo3(ListOfCities * cities, graphe* g);
-
 float kruskal_algo4(ListOfCities * cities, graphe* g);
-float kruskal_algo5(ListOfCities * cities, graphe* g);
-
-float kruskal_algo6(ListOfCities * cities, graphe* g);
-float kruskal_algo7(ListOfCities * cities, graphe* g);
 
 void affichage(tas* t);
 

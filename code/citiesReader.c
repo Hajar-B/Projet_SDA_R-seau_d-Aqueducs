@@ -337,7 +337,7 @@ void affichage(tas* t){
 /* ************************************************************************************************************ */
 /* ************************************************************************************************************ */
 
-float kruskal_algo2(ListOfCities * cities, graphe* g){
+float kruskal_algo1(ListOfCities * cities, graphe* g){
   // Analyse du temps pris par les opérations.
   analyzer_t * time_analysis1 = analyzer_create(); //insertion
   // Analyse de l'espace mémoire inutilisé.
@@ -373,14 +373,6 @@ float kruskal_algo2(ListOfCities * cities, graphe* g){
       mem = mem + (t->capacite_max-t->nb_element);
     }
   }
-  /*
-  clock_gettime(clk_id1, &before1);
-  tmp = supprimer_tas(t);
-  clock_gettime(clk_id1, &after1);
-  analyzer_append(time_analysis1, after1.tv_nsec - before1.tv_nsec);
-  analyzer_append(memory_analysis1,t->capacite_max-t->nb_element);
-  mem = mem + (t->capacite_max-t->nb_element);
-  */
   while(t->nb_element != 0){
     clock_gettime(clk_id1, &before1);
     tmp = supprimer_tas(t);
@@ -411,22 +403,22 @@ float kruskal_algo2(ListOfCities * cities, graphe* g){
   printf("mem == %d\n", mem);
   printf("total amortized = %Lf\n", cout_amortie);
 
-  save_values(time_analysis1, "../plots/temps_amortie_kruskal_fixe_250000.plot");
-  save_values(memory_analysis1, "../plots/waste_memory_kruskal_fixe_250000.plot");
+  save_values(time_analysis1, "../plots/temps_amortie_kruskal_fixe_100000.plot");
+  save_values(memory_analysis1, "../plots/waste_memory_kruskal_fixe_100000.plot");
   analyzer_destroy(time_analysis1);
   analyzer_destroy(memory_analysis1);
   return distance_total;
 }
 
 
-float kruskal_algo3(ListOfCities * cities, graphe* g){
+float kruskal_algo2(ListOfCities * cities, graphe* g){
   // Analyse du temps pris par les opérations.
-  analyzer_t * time_analysis1 = analyzer_create(); //insertion
+  analyzer_t * time_analysis2 = analyzer_create(); //insertion
   // Analyse de l'espace mémoire inutilisé.
-  analyzer_t * memory_analysis1 = analyzer_create(); //insertion
+  analyzer_t * memory_analysis2 = analyzer_create(); //insertion
   // Mesure de la durée d'une opération.
-  struct timespec before1, after1; //insertion
-  clockid_t clk_id1 = CLOCK_REALTIME; //insertion
+  struct timespec before2, after2; //insertion
+  clockid_t clk_id2 = CLOCK_REALTIME; //insertion
 
   tas* t2 = creer_tas(2);
   arete* a;
@@ -442,31 +434,23 @@ float kruskal_algo3(ListOfCities * cities, graphe* g){
     tab[i].rank = 0;
     for(int j=i+1; j<cities->number; j++){
       a = creer_arete(i,j,cities->lon[i],cities->lat[i], cities->lon[j],cities->lat[j]);
-      clock_gettime(clk_id1, &before1);
+      clock_gettime(clk_id2, &before2);
       inserer_tas2(t2,a);
-      clock_gettime(clk_id1, &after1);
+      clock_gettime(clk_id2, &after2);
       // Enregistrement du temps pris par l'opération
-      analyzer_append(time_analysis1, after1.tv_nsec - before1.tv_nsec);
-      for (int j = 0; j < time_analysis1->size; ++j){
-        cout_amortie = cout_amortie + get_amortized_cost(time_analysis1, j);
+      analyzer_append(time_analysis2, after2.tv_nsec - before2.tv_nsec);
+      for (int j = 0; j < time_analysis2->size; ++j){
+        cout_amortie = cout_amortie + get_amortized_cost(time_analysis2, j);
       }
       // Enregistrement de l'espace mémoire non-utilisé.
-      analyzer_append(memory_analysis1,t2->capacite_max-t2->nb_element);
+      analyzer_append(memory_analysis2,t2->capacite_max-t2->nb_element);
       mem = mem + (t2->capacite_max-t2->nb_element);
     }
   }
-  /*
-  clock_gettime(clk_id1, &before1);
-  tmp2 = supprimer_tas2(t2);
-  clock_gettime(clk_id1, &after1);
-  analyzer_append(time_analysis1, after1.tv_nsec - before1.tv_nsec);
-  analyzer_append(memory_analysis1,t2->capacite_max-t2->nb_element);
-  mem = mem + (t2->capacite_max-t2->nb_element);
- */
   while(t2->nb_element != 0){
-    clock_gettime(clk_id1, &before1);
+    clock_gettime(clk_id2, &before2);
     tmp2 = supprimer_tas2(t2);
-    clock_gettime(clk_id1, &after1);
+    clock_gettime(clk_id2, &after2);
 
     ext = union_find2(tmp2, tab);
     if(ext == 1){
@@ -477,37 +461,37 @@ float kruskal_algo3(ListOfCities * cities, graphe* g){
       g->nb_sommet++;
     }
 
-    analyzer_append(time_analysis1, after1.tv_nsec - before1.tv_nsec);
-    for (int j = 0; j < time_analysis1->size; ++j){
-      cout_amortie = cout_amortie + get_amortized_cost(time_analysis1, j);
+    analyzer_append(time_analysis2, after2.tv_nsec - before2.tv_nsec);
+    for (int j = 0; j < time_analysis2->size; ++j){
+      cout_amortie = cout_amortie + get_amortized_cost(time_analysis2, j);
     }
-    analyzer_append(memory_analysis1,t2->capacite_max-t2->nb_element);
+    analyzer_append(memory_analysis2,t2->capacite_max-t2->nb_element);
     mem = mem + (t2->capacite_max-t2->nb_element);
   }
   free(t2->tab);
   free(t2);
-  fprintf(stderr, "Average cost: %Lf\n", get_average_cost(time_analysis1));
-  analyzer_append(memory_analysis1,t2->capacite_max-t2->nb_element);
+  fprintf(stderr, "Average cost: %Lf\n", get_average_cost(time_analysis2));
+  analyzer_append(memory_analysis2,t2->capacite_max-t2->nb_element);
   mem = mem + (t2->capacite_max-t2->nb_element);
   printf("mem == %d\n", mem);
   printf("total amortized = %Lf\n", cout_amortie);
 
-  save_values(time_analysis1, "../plots/temps_amortie_kruskal_dynamique_250000.plot");
-  save_values(memory_analysis1, "../plots/waste_memory_kruskal_dynamique_250000.plot");
-  analyzer_destroy(time_analysis1);
-  analyzer_destroy(memory_analysis1);
+  save_values(time_analysis2, "../plots/temps_amortie_kruskal_dynamique_100000.plot");
+  save_values(memory_analysis2, "../plots/waste_memory_kruskal_dynamique_100000.plot");
+  analyzer_destroy(time_analysis2);
+  analyzer_destroy(memory_analysis2);
   return distance_total;
 }
 
 
-float kruskal_algo4(ListOfCities * cities, graphe* g){
+float kruskal_algo3(ListOfCities * cities, graphe* g){
   // Analyse du temps pris par les opérations.
-  analyzer_t * time_analysis1 = analyzer_create(); //insertion
+  analyzer_t * time_analysis3 = analyzer_create(); //insertion
   // Analyse de l'espace mémoire inutilisé.
-  analyzer_t * memory_analysis1 = analyzer_create(); //insertion
+  analyzer_t * memory_analysis3 = analyzer_create(); //insertion
   // Mesure de la durée d'une opération.
-  struct timespec before1, after1; //insertion
-  clockid_t clk_id1 = CLOCK_REALTIME; //insertion
+  struct timespec before3, after3; //insertion
+  clockid_t clk_id3 = CLOCK_REALTIME; //insertion
 
   tas* t = creer_tas((cities->number*(cities->number-1))/2);
   arete* a;
@@ -523,31 +507,23 @@ float kruskal_algo4(ListOfCities * cities, graphe* g){
     tab[i].rank = 0;
     for(int j=i+1; j<cities->number; j++){
       a = creer_arete(i,j,cities->lon[i],cities->lat[i], cities->lon[j],cities->lat[j]);
-      clock_gettime(clk_id1, &before1);
+      clock_gettime(clk_id3, &before3);
       inserer_tas(t,a);
-      clock_gettime(clk_id1, &after1);
+      clock_gettime(clk_id3, &after3);
       // Enregistrement du temps pris par l'opération
-      analyzer_append(time_analysis1, after1.tv_nsec - before1.tv_nsec);
-      for (int j = 0; j < time_analysis1->size; ++j){
-        cout_amortie = cout_amortie + get_amortized_cost(time_analysis1, j);
+      analyzer_append(time_analysis3, after3.tv_nsec - before3.tv_nsec);
+      for (int j = 0; j < time_analysis3->size; ++j){
+        cout_amortie = cout_amortie + get_amortized_cost(time_analysis3, j);
       }
       // Enregistrement de l'espace mémoire non-utilisé.
-      analyzer_append(memory_analysis1,t->capacite_max-t->nb_element);
+      analyzer_append(memory_analysis3,t->capacite_max-t->nb_element);
       mem = mem + (t->capacite_max-t->nb_element);
     }
   }
-  /*
-  clock_gettime(clk_id1, &before1);
-  tmp = supprimer_tas(t);
-  clock_gettime(clk_id1, &after1);
-  analyzer_append(time_analysis1, after1.tv_nsec - before1.tv_nsec);
-  analyzer_append(memory_analysis1,t->capacite_max-t->nb_element);
-  mem = mem + (t->capacite_max-t->nb_element);
-  */
   while(t->nb_element != 0){
-    clock_gettime(clk_id1, &before1);
+    clock_gettime(clk_id3, &before3);
     tmp = supprimer_tas2(t);
-    clock_gettime(clk_id1, &after1);
+    clock_gettime(clk_id3, &after3);
 
     ext = union_find2(tmp, tab);
     if(ext == 1){
@@ -558,25 +534,97 @@ float kruskal_algo4(ListOfCities * cities, graphe* g){
       g->nb_sommet++;
     }
 
-    analyzer_append(time_analysis1, after1.tv_nsec - before1.tv_nsec);
-    for (int j = 0; j < time_analysis1->size; ++j){
-      cout_amortie = cout_amortie + get_amortized_cost(time_analysis1, j);
+    analyzer_append(time_analysis3, after3.tv_nsec - before3.tv_nsec);
+    for (int j = 0; j < time_analysis3->size; ++j){
+      cout_amortie = cout_amortie + get_amortized_cost(time_analysis3, j);
     }
-    analyzer_append(memory_analysis1,t->capacite_max-t->nb_element);
+    analyzer_append(memory_analysis3,t->capacite_max-t->nb_element);
     mem = mem + (t->capacite_max-t->nb_element);
 
   }
   free(t->tab);
   free(t);
-  fprintf(stderr, "Average cost: %Lf\n", get_average_cost(time_analysis1));
-  analyzer_append(memory_analysis1,t->capacite_max-t->nb_element);
+  fprintf(stderr, "Average cost: %Lf\n", get_average_cost(time_analysis3));
+  analyzer_append(memory_analysis3,t->capacite_max-t->nb_element);
   mem = mem + (t->capacite_max-t->nb_element);
   printf("mem == %d\n", mem);
   printf("total amortized = %Lf\n", cout_amortie);
 
-  save_values(time_analysis1, "../plots/temps_amortie_kruskal_fixe+dynamique_250000.plot");
-  save_values(memory_analysis1, "../plots/waste_memory_kruskal_fixe+dynamique_250000.plot");
-  analyzer_destroy(time_analysis1);
-  analyzer_destroy(memory_analysis1);
+  save_values(time_analysis3, "../plots/temps_amortie_kruskal_fixe_and_dynamique_100000.plot");
+  save_values(memory_analysis3, "../plots/waste_memory_kruskal_fixe_and_dynamique_100000.plot");
+  analyzer_destroy(time_analysis3);
+  analyzer_destroy(memory_analysis3);
+  return distance_total;
+}
+
+float kruskal_algo4(ListOfCities * cities, graphe* g){
+  // Analyse du temps pris par les opérations.
+  analyzer_t * time_analysis4 = analyzer_create(); //insertion
+  // Analyse de l'espace mémoire inutilisé.
+  analyzer_t * memory_analysis4 = analyzer_create(); //insertion
+  // Mesure de la durée d'une opération.
+  struct timespec before4, after4; //insertion
+  clockid_t clk_id4 = CLOCK_REALTIME; //insertion
+
+  tas* t2 = creer_tas(2);
+  arete* a;
+  arete tmp2;
+  float distance_total = 0;
+  int ext;
+  int mem = 0;
+  float cout_amortie = 0;
+  compressionC* tab = (compressionC*)malloc(cities->number*sizeof(compressionC));
+
+  for(int i=0; i<cities->number; i++){
+    tab[i].parent = i;
+    tab[i].rank = 0;
+    for(int j=i+1; j<cities->number; j++){
+      a = creer_arete(i,j,cities->lon[i],cities->lat[i], cities->lon[j],cities->lat[j]);
+      clock_gettime(clk_id4, &before4);
+      inserer_tas2(t2,a);
+      clock_gettime(clk_id4, &after4);
+      // Enregistrement du temps pris par l'opération
+      analyzer_append(time_analysis4, after4.tv_nsec - before4.tv_nsec);
+      for (int j = 0; j < time_analysis4->size; ++j){
+        cout_amortie = cout_amortie + get_amortized_cost(time_analysis4, j);
+      }
+      // Enregistrement de l'espace mémoire non-utilisé.
+      analyzer_append(memory_analysis4,t2->capacite_max-t2->nb_element);
+      mem = mem + (t2->capacite_max-t2->nb_element);
+    }
+  }
+  while(t2->nb_element != 0){
+    clock_gettime(clk_id4, &before4);
+    tmp2 = supprimer_tas(t2);
+    clock_gettime(clk_id4, &after4);
+
+    ext = union_find2(tmp2, tab);
+    if(ext == 1){
+      distance_total = distance_total + tmp2.distance;
+      g->tab_sommet[g->nb_sommet] = tmp2.Ville_D;
+      g->nb_sommet++;
+      g->tab_sommet[g->nb_sommet] = tmp2.Ville_A;
+      g->nb_sommet++;
+    }
+
+    analyzer_append(time_analysis4, after4.tv_nsec - before4.tv_nsec);
+    for (int j = 0; j < time_analysis4->size; ++j){
+      cout_amortie = cout_amortie + get_amortized_cost(time_analysis4, j);
+    }
+    analyzer_append(memory_analysis4,t2->capacite_max-t2->nb_element);
+    mem = mem + (t2->capacite_max-t2->nb_element);
+  }
+  free(t2->tab);
+  free(t2);
+  fprintf(stderr, "Average cost: %Lf\n", get_average_cost(time_analysis4));
+  analyzer_append(memory_analysis4,t2->capacite_max-t2->nb_element);
+  mem = mem + (t2->capacite_max-t2->nb_element);
+  printf("mem == %d\n", mem);
+  printf("total amortized = %Lf\n", cout_amortie);
+
+  save_values(time_analysis4, "../plots/temps_amortie_kruskal_dynamique_fixe_100000.plot");
+  save_values(memory_analysis4, "../plots/waste_memory_kruskal_dynamique_fixe_100000.plot");
+  analyzer_destroy(time_analysis4);
+  analyzer_destroy(memory_analysis4);
   return distance_total;
 }
